@@ -1,7 +1,7 @@
 <template>
   <el-header>
     <div class="l-content">
-      <el-button size="small">
+      <el-button size="small" @click="handleCollapse">
         <el-icon :size="20">
           <Menu></Menu>
         </el-icon>
@@ -24,10 +24,16 @@
   </el-header>
 </template>
 <script setup>
+import { useStore } from "vuex";
 //动态导入静态资源(如图片动态的展示)
 const getImgSrc = (user) => {
   // 原生JS的URL：MDN
   return new URL(`../assets/images/${user}.png`, import.meta.url).href;
+};
+const store = useStore();
+const handleCollapse = () => {
+  console.log("点击了");
+  store.commit("updatedIsCollapse");
 };
 </script>
 <style lang="scss" scoped>

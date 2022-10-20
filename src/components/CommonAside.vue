@@ -1,5 +1,5 @@
 <template>
-  <el-aside width="200px">
+  <el-aside :width="$store.state.isCollapse ? '64px' : '180px'">
     <el-menu
       default-active="2"
       class="el-menu-vertical-demo"
@@ -7,12 +7,16 @@
       @close="handleClose"
       background-color="#545c64"
       text-color="#fff"
-      :collapse="false"
+      :collapse="$store.state.isCollapse"
+      :collapse-transition="false"
     >
+      <h3 v-show="$store.state.isCollapse">后台</h3>
+      <h3 v-show="!$store.state.isCollapse">后台管理系统</h3>
       <el-menu-item
         v-for="item in noChildren()"
         :key="item.path"
         :index="item.path"
+        @click="cliceMenu(item)"
       >
         <component class="icons" :is="item.icon"></component>
         <span>{{ item.label }}</span>
@@ -32,6 +36,7 @@
             :index="subItem.path"
             v-for="(subItem, subIndex) in item.children"
             :key="subIndex"
+            @click="cliceMenu(subItem)"
             ><component class="icons" :is="subItem.icon"></component>
             <span>{{ item.label }}</span></el-menu-item
           >
@@ -41,7 +46,9 @@
   </el-aside>
 </template>
 <script setup>
+import { useRoute, useRouter } from "vue-router";
 import { onMounted } from "vue";
+const router = useRouter();
 const list = [
   {
     path: "/user",
@@ -78,9 +85,12 @@ const noChildren = () => {
 const hasChildren = () => {
   return list.filter((item) => item.children);
 };
-onMounted(() => {
-  console.log(noChildren());
-});
+const cliceMenu = (item) => {
+  router.push({
+    name: item.name,
+  });
+};
+onMounted(() => {});
 </script>
 <style lang="scss" scoped>
 .icons {
@@ -89,5 +99,10 @@ onMounted(() => {
 }
 .el-menu {
   border-right: none;
+  h3 {
+    line-height: 48px;
+    color: #fff;
+    text-align: center;
+  }
 }
 </style>
