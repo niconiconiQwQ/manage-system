@@ -3,8 +3,6 @@
     <el-menu
       default-active="2"
       class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
       background-color="#545c64"
       text-color="#fff"
       :collapse="$store.state.isCollapse"
@@ -38,7 +36,7 @@
             :key="subIndex"
             @click="cliceMenu(subItem)"
             ><component class="icons" :is="subItem.icon"></component>
-            <span>{{ item.label }}</span></el-menu-item
+            <span>{{ subItem.label }}</span></el-menu-item
           >
         </el-menu-item-group>
       </el-sub-menu>
@@ -48,6 +46,8 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
 import { onMounted } from "vue";
+import { useStore } from "vuex";
+const store = useStore();
 const router = useRouter();
 const list = [
   {
@@ -86,6 +86,7 @@ const hasChildren = () => {
   return list.filter((item) => item.children);
 };
 const cliceMenu = (item) => {
+  store.commit("selectMenu", item);
   router.push({
     name: item.name,
   });

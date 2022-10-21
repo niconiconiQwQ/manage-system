@@ -6,7 +6,13 @@
           <Menu></Menu>
         </el-icon>
       </el-button>
-      <h3>首页</h3>
+      <el-breadcrumb separator="/" class="bread">
+        <!-- 首页一定存在, 所以写死 -->
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item :to="current.path" v-if="current">{{
+          current.label
+        }}</el-breadcrumb-item>
+      </el-breadcrumb>
     </div>
     <div class="r-content">
       <el-dropdown>
@@ -24,6 +30,7 @@
   </el-header>
 </template>
 <script setup>
+import { computed } from "vue";
 import { useStore } from "vuex";
 //动态导入静态资源(如图片动态的展示)
 const getImgSrc = (user) => {
@@ -35,6 +42,9 @@ const handleCollapse = () => {
   console.log("点击了");
   store.commit("updatedIsCollapse");
 };
+const current = computed(() => {
+  return store.state.currentMenu;
+});
 </script>
 <style lang="scss" scoped>
 .el-header {
@@ -52,6 +62,10 @@ const handleCollapse = () => {
   }
   h3 {
     color: #fff;
+  }
+  .bread :deep(span) {
+    color: #fff !important;
+    cursor: pointer !important;
   }
 }
 .r-content {

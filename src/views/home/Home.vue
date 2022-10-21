@@ -48,39 +48,33 @@
       <el-card style="height: 280px">
         <div ref="echart" style="height: 280px"></div>
       </el-card>
+      <div class="graph">
+        <el-card style="height: 260px">
+          <div ref="userEchart" style="height: 240px"></div>
+        </el-card>
+        <el-card style="height: 260px">
+          <div ref="videoEchart" style="height: 240px"></div>
+        </el-card>
+      </div>
     </el-col>
   </el-row>
 </template>
 <script setup>
 import { ref, onBeforeMount, getCurrentInstance } from "vue";
+import * as echarts from "echarts";
 const { proxy } = getCurrentInstance();
 const tableData = ref([]);
 const countData = ref([]);
 const EchartData = ref({});
+const echart = ref();
+const userEchart = ref();
+const videoEchart = ref();
 const tableLabel = ref({
   name: "课程",
   todayBuy: "今日购买",
   monthBuy: "本月购买",
   totalBuy: "总购买",
 });
-onBeforeMount(() => {
-  getTableData();
-  getCountData();
-  getEchartData();
-});
-const getTableData = async () => {
-  let res = await proxy.$api.getTableData();
-  tableData.value = res;
-};
-const getCountData = async () => {
-  let res = await proxy.$api.getCountData();
-  countData.value = res;
-};
-const getEchartData = async () => {
-  let res = await proxy.$api.getEchartsData();
-  EchartData.value = res;
-  console.log(EchartData.value);
-};
 // 关于echarts的渲染
 const xOptions = ref({
   // 图例文字颜色
@@ -138,6 +132,10 @@ const pieOptions = ref(
     series: [],
   }
 );
+const orderData = ref({
+  xData: [],
+  series: [],
+});
 const userData = ref({
   xData: [],
   series: [],
@@ -145,11 +143,67 @@ const userData = ref({
 const videoData = ref({
   series: [],
 });
-
-const orderData = ref({
-  xData: [],
-  series: [],
+onBeforeMount(() => {
+  getTableData();
+  getCountData();
+  getEchartData();
 });
+const getTableData = async () => {
+  let res = await proxy.$api.getTableData();
+  tableData.value = res;
+};
+const getCountData = async () => {
+  let res = await proxy.$api.getCountData();
+  countData.value = res;
+};
+const getEchartData = async () => {
+  let res = await proxy.$api.getEchartsData();
+  let { orderData: orderRes, userData: userRes, videoData: videoRes } = res;
+  orderData.value.xData = orderRes.date;
+  const keyArr = Object.keys(orderRes.data[0]);
+  const series = [];
+  keyArr.forEach((key) => {
+    series.push({
+      name: key,
+      data: orderRes.data.map((item) => item[key]),
+      type: "line",
+    });
+  });
+  orderData.value.series = series;
+  xOptions.value.xAxis.data = orderData.value.xData;
+  xOptions.value.series = orderData.value.series;
+  // 对userData进行渲染
+  let hEcharts = echarts.init(echart.value);
+  hEcharts.setOption(xOptions.value);
+  // 柱状图渲染过程
+  userData.value = userRes.map((item) => item.date);
+  userData.value.series = [
+    {
+      name: "新增用户",
+      data: userRes.map((item) => item.new),
+      type: "bar",
+    },
+    {
+      name: "活跃用户",
+      data: userRes.map((item) => item.active),
+      type: "bar",
+    },
+  ];
+  xOptions.value.xAxis.data = userData.value.xData;
+  xOptions.value.series = userData.value.series;
+  let uEcharts = echarts.init(userEchart.value);
+  uEcharts.setOption(xOptions.value);
+  // 饼状图
+  videoData.value.series = [
+    {
+      data: videoRes,
+      type: "pie",
+    },
+  ];
+  pieOptions.value.series = videoData.value.series;
+  let vEcharts = echarts.init(videoEchart.value);
+  vEcharts.setOption(pieOptions.value);
+};
 </script>
 <style lang="scss" scoped>
 .home {
@@ -210,6 +264,14 @@ const orderData = ref({
         text-align: center;
         color: #999;
       }
+    }
+  }
+  .graph {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    .el-card {
+      width: 48%;
     }
   }
 }

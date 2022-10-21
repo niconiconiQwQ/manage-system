@@ -26,4 +26,29 @@ export default {
       mock: true,
     });
   },
+  getUserData(params) {
+    return request({
+      url: "/user/getUser",
+      method: "get",
+      // 这个mock如果是true，用的就是线上fastmock的数据
+      mock: false,
+      data: params,
+    });
+  },
+  addUser(params) {
+    return request({
+      url: "/user/add",
+      method: "post",
+      mock: false,
+      data: params,
+    });
+  },
+  editUser(params) {
+    return request({
+      url: "/user/edit",
+      method: "post",
+      mock: false,
+      data: params,
+    });
+  },
 };
