@@ -98,7 +98,7 @@ export default {
     } else {
       List = List.filter((u) => u.id !== id);
       return {
-        code: 20000,
+        code: 200,
         message: "删除成功",
       };
     }

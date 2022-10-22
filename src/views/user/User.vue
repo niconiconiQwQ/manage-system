@@ -25,7 +25,12 @@
           <el-button type="primary" size="small" @click="handleEdit(scoped.row)"
             >编辑</el-button
           >
-          <el-button type="danger" size="small">删除</el-button>
+          <el-button
+            type="danger"
+            size="small"
+            @click="handleDelete(scoped.row)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -265,6 +270,23 @@ const onSubmit = () => {
       });
     }
   });
+};
+// 删除用户
+const handleDelete = (row) => {
+  ElMessageBox.confirm("确认删除嘛?")
+    .then(async () => {
+      let res = await proxy.$api.deleteUser({ id: row.id });
+      ElMessage({
+        showClose: true,
+        message: "删除成功",
+        type: "success",
+      });
+      getUserData(config);
+      done();
+    })
+    .catch(() => {
+      // catch error
+    });
 };
 </script>
 <style lang="scss" scoped>

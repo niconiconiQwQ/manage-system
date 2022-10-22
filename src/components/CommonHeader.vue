@@ -22,7 +22,7 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item>个人中心</el-dropdown-item>
-            <el-dropdown-item>退出</el-dropdown-item>
+            <el-dropdown-item @click="handleLogOut">退出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -32,6 +32,8 @@
 <script setup>
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+const router = useRouter();
 //动态导入静态资源(如图片动态的展示)
 const getImgSrc = (user) => {
   // 原生JS的URL：MDN
@@ -45,6 +47,12 @@ const handleCollapse = () => {
 const current = computed(() => {
   return store.state.currentMenu;
 });
+const handleLogOut = () => {
+  store.commit("cleanMenu");
+  router.push({
+    name: "login",
+  });
+};
 </script>
 <style lang="scss" scoped>
 .el-header {

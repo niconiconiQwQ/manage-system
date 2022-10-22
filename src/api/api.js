@@ -51,4 +51,21 @@ export default {
       data: params,
     });
   },
+  deleteUser(params) {
+    return request({
+      url: "/user/delete",
+      method: "get",
+      mock: false,
+      data: params,
+    });
+  },
+  // 根据用户的用户名不同，返回不一样的菜单列表
+  getMenu(params) {
+    return request({
+      url: "/permission/getMenu",
+      method: "get",
+      mock: false,
+      data: params,
+    });
+  },
 };
